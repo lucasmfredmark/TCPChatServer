@@ -48,48 +48,59 @@ public class ClientHandler implements Runnable {
                 String[] cmd = message.split(":");
 
                 if (!loggedIn) {
-                    if (cmd[0].equals(ProtocolStrings.LOGIN)) {
-                        if (!(cmd[1].contains(":") || cmd[1].contains(",")) && cmd[1].length() > 0) {
-                            loggedIn = true;
-                            clientName = cmd[1];
-                            sendMessage("You have been logged in.");
-                            printClientList();
-                        } else {
-                            sendMessage("You must specify a valid name.");
-                            break;
-                        }
+                    if (cmd.length == 2 && cmd[0].equals(ProtocolStrings.LOGIN) && !cmd[1].trim().isEmpty() && !cmd[1].contains(",")) {
+                        loggedIn = true;
+                        clientName = cmd[1];
+                        
+                        sendMessage("You have been logged in.");
+                        printClientList();
                     } else {
                         break;
                     }
                 } else {
-                    if (cmd[0].equals(ProtocolStrings.MSG)) {
-                        if (cmd[1].isEmpty()) {
-                            server.sendMulticast(cmd[2]);
-                        } else {
-                            String[] usernames = cmd[1].split(",");
-
-                            for (String u : usernames) {
-                                for (ClientHandler c : server.getClientHandlers()) {
-                                    if (u.equals(c.getClientName())) {
-                                        c.sendMessage(cmd[2]);
-                                        break;
+                    if (cmd.length == 3 && cmd[0].equals(ProtocolStrings.MSG)) {
+                        if (!cmd[2].trim().isEmpty() && !cmd[2].contains(",")) {
+                            if (cmd[1].trim().isEmpty()) {
+                                // send message to all
+                                server.sendMulticast(cmd[2]);
+                            } else {
+                                // send message to recipients
+                                
+                                String[] clientNames;
+                                
+                                if (cmd[1].contains(",")) {
+                                    clientNames = cmd[1].split(",");
+                                } else {
+                                    clientNames = new String[1];
+                                    clientNames[0] = cmd[1];
+                                }
+                                
+                                for (String u : clientNames) {
+                                    for (ClientHandler c : server.getClientHandlers()) {
+                                        if (u.equals(c.getClientName())) {
+                                            c.sendMessage(cmd[2]);
+                                        }
                                     }
                                 }
                             }
                         }
-                    } else if (cmd[0].equals(ProtocolStrings.LOGOUT)) {
+                    } else if (cmd.length == 1 && cmd[0].equals(ProtocolStrings.LOGOUT)) {
+                        // disconnect the client
                         break;
                     }
                 }
             }
         } finally {
             try {
+                sendMessage("You have been disconnected.");
                 socket.close();
                 server.removeHandler(this);
-                server.sendMulticast(this.getClientName() + " has logged out.");
-                System.out.println("Closed a connection.");
+                
+                if (getClientName() != null)
+                    server.sendMulticast(getClientName() + " has logged out.");
+                
                 printClientList();
-                sendMessage("You have been logged out.");
+                System.out.println("Closed a connection.");
             } catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -97,7 +108,6 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendMessage(String message) {
-        System.out.println("Sending " + message);
         writer.println(message);
         writer.flush();
     }
@@ -106,13 +116,17 @@ public class ClientHandler implements Runnable {
         ArrayList<String> clientList = new ArrayList<>();
 
         for (ClientHandler c : server.getClientHandlers()) {
-            if (!c.getClientName().equals("null"))
+            if (c.getClientName() != null)
                 clientList.add(c.getClientName());
         }
 
         server.sendMulticast("CLIENTLIST:" + String.join(",", clientList));
     }
-
+    
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+    
     public String getClientName() {
         return clientName;
     }

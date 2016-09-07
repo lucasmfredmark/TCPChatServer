@@ -62,7 +62,7 @@ public class ClientHandler implements Runnable {
                         if (!cmd[2].trim().isEmpty() && !cmd[2].contains(",")) {
                             if (cmd[1].trim().isEmpty()) {
                                 // send message to all
-                                server.sendMulticast(cmd[2]);
+                                server.sendMulticast(clientName + ": " + cmd[2]);
                             } else {
                                 // send message to recipients
                                 
@@ -78,7 +78,7 @@ public class ClientHandler implements Runnable {
                                 for (String u : clientNames) {
                                     for (ClientHandler c : server.getClientHandlers()) {
                                         if (u.equals(c.getClientName())) {
-                                            c.sendMessage(cmd[2]);
+                                            c.sendMessage(clientName + ": " + cmd[2]);
                                         }
                                     }
                                 }

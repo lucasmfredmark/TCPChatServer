@@ -17,14 +17,13 @@ import java.util.logging.Logger;
 public class ClientGui extends javax.swing.JFrame {
 
     private ClientConnection connection;
-
+    
     /**
      * Creates new form ClientGui
      *
      */
     public ClientGui() {
         initComponents();
-
     }
 
     /**
@@ -48,6 +47,7 @@ public class ClientGui extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jTextArea2.setEditable(false);
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
@@ -149,7 +149,7 @@ public class ClientGui extends javax.swing.JFrame {
                     connection.send(message);
                     jTextField1.setText("");
                 });
-
+                
                 jButton3.setEnabled(false);
                 jButton4.setEnabled(true);
                 jTextArea2.append("You have been connected to " + ip + ":" + port + "\n");
@@ -164,7 +164,6 @@ public class ClientGui extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         try {
             connection.close();
-            jTextArea2.append("You have been disconnected.\n");
             jButton3.setEnabled(true);
             jButton4.setEnabled(false);
         } catch (Exception ex) {

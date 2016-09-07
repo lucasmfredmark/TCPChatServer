@@ -47,8 +47,9 @@ public class EchoServer {
 
     public void sendMulticast(String message) {
         clients.forEach(client -> {
-            if (client.isLoggedIn())
+            if (client.isLoggedIn()) {
                 client.sendMessage(message);
+            }
         });
     }
 
@@ -67,7 +68,7 @@ public class EchoServer {
 //                throw new IllegalArgumentException("Error: Use like: java -jar EchoServer.jar <ip> <port>");
 //            }
             String ip = "localhost";
-            int port = 7780;
+            int port = 7777;
             new EchoServer().runServer(ip, port);
         } catch (Exception e) {
             System.out.println(e.getMessage());

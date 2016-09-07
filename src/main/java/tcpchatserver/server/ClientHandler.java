@@ -48,57 +48,51 @@ public class ClientHandler implements Runnable {
                 String[] cmd = message.split(":");
 
                 if (!loggedIn) {
-                    if (cmd.length == 2 && cmd[0].equals(ProtocolStrings.LOGIN) && !cmd[1].trim().isEmpty() && !cmd[1].contains(",")) {
+                    if (cmd[0].equals(ProtocolStrings.LOGIN)) {
                         loggedIn = true;
                         clientName = cmd[1];
-                        
-                        sendMessage("You have been logged in.");
                         printClientList();
                     } else {
                         break;
                     }
                 } else {
-                    if (cmd.length == 3 && cmd[0].equals(ProtocolStrings.MSG)) {
-                        if (!cmd[2].trim().isEmpty() && !cmd[2].contains(",")) {
-                            if (cmd[1].trim().isEmpty()) {
-                                // send message to all
-                                server.sendMulticast(clientName + ": " + cmd[2]);
+                    if (cmd[0].equals(ProtocolStrings.MSG)) {
+                        if (cmd[1].trim().isEmpty()) {
+                            // send message to all
+                            server.sendMulticast("MSGRES:" + clientName + ":" + cmd[2]);
+                        } else {
+                            // send message to recipients
+
+                            String[] clientNames;
+
+                            if (cmd[1].contains(",")) {
+                                clientNames = cmd[1].split(",");
                             } else {
-                                // send message to recipients
-                                
-                                String[] clientNames;
-                                
-                                if (cmd[1].contains(",")) {
-                                    clientNames = cmd[1].split(",");
-                                } else {
-                                    clientNames = new String[1];
-                                    clientNames[0] = cmd[1];
-                                }
-                                
-                                for (String u : clientNames) {
-                                    for (ClientHandler c : server.getClientHandlers()) {
-                                        if (u.equals(c.getClientName())) {
-                                            c.sendMessage(clientName + ": " + cmd[2]);
-                                        }
+                                clientNames = new String[1];
+                                clientNames[0] = cmd[1];
+                            }
+
+                            for (String u : clientNames) {
+                                for (ClientHandler c : server.getClientHandlers()) {
+                                    if (u.equals(c.getClientName())) {
+                                        c.sendMessage("MSGRES:" + clientName + ":" + cmd[2]);
                                     }
                                 }
                             }
                         }
-                    } else if (cmd.length == 1 && cmd[0].equals(ProtocolStrings.LOGOUT)) {
+                    } else if (cmd[0].equals(ProtocolStrings.LOGOUT)) {
                         // disconnect the client
+                        break;
+                    } else {
+                        // invalid command
                         break;
                     }
                 }
             }
         } finally {
             try {
-                sendMessage("You have been disconnected.");
                 socket.close();
                 server.removeHandler(this);
-                
-                if (getClientName() != null)
-                    server.sendMulticast(getClientName() + " has logged out.");
-                
                 printClientList();
                 System.out.println("Closed a connection.");
             } catch (IOException ex) {

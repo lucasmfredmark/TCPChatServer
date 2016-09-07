@@ -31,7 +31,6 @@ public class EchoClient {
     }
 
     public void send(String msg) {
-        System.out.println("Sending " + msg);
         output.println(msg);
     }
 
@@ -41,14 +40,13 @@ public class EchoClient {
 
     public String receive() {
         String msg = input.nextLine();
-        if (msg.equals(ProtocolStrings.LOGOUT)) {
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(EchoClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        String[] cmd = msg.split(":");
+        
+        if (cmd[0].equals(ProtocolStrings.CLIENTLIST) || cmd[0].equals(ProtocolStrings.MSGRES)) {
+            return msg;
         }
-        return msg;
+        
+        return null;
     }
 
     public static void main(String[] args) {
@@ -61,12 +59,11 @@ public class EchoClient {
         try {
             EchoClient tester = new EchoClient();
             tester.connect(ip, port);
-            System.out.println("Sending 'Hello world'");
-            tester.send("Hello World");
-            System.out.println("Waiting for a reply");
+            tester.send("LOGIN:Hello");
+            System.out.println("Received: " + tester.receive());
+            tester.send("MSG::HelloFUcker");
             System.out.println("Received: " + tester.receive()); //Important Blocking call         
-            tester.stop();
-            //System.in.read();      
+            tester.stop();   
         } catch (UnknownHostException ex) {
             Logger.getLogger(EchoClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

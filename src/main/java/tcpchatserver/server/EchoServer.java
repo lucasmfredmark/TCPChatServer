@@ -41,7 +41,7 @@ public class EchoServer {
                 clientHandlers.submit(clientHandler);
             } while (keepRunning);
         } catch (IOException ex) {
-            Logger.getLogger(EchoServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Log.logFileName).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -64,10 +64,10 @@ public class EchoServer {
 //                throw new IllegalArgumentException("Error: Use like: java -jar EchoServer.jar <ip> <port>");
 //            }
             String ip = "localhost";
-            int port = 9002;
+            int port = 9007;
             new EchoServer().runServer(ip, port);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 }

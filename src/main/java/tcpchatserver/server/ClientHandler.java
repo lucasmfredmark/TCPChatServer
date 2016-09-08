@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import tcpchatserver.shared.Log;
 import tcpchatserver.shared.ProtocolStrings;
 
 /**
@@ -52,6 +53,7 @@ public class ClientHandler implements Runnable {
                         loggedIn = true;
                         clientName = cmd[1];
                         printClientList();
+                         Logger.getLogger(Log.logFileName).log(Level.INFO, (clientName + " " + "logged in"));
                     } else {
                         break;
                     }
@@ -60,6 +62,7 @@ public class ClientHandler implements Runnable {
                         if (cmd[1].trim().isEmpty()) {
                             // send message to all
                             server.sendMulticast("MSGRES:" + clientName + ":" + cmd[2]);
+                             Logger.getLogger(Log.logFileName).log(Level.INFO, (clientName + " " + "messaged all"));
                         } else {
                             // send message to recipients
 
@@ -77,11 +80,13 @@ public class ClientHandler implements Runnable {
                                     if (u.equals(c.getClientName())) {
                                         c.sendMessage("MSGRES:" + clientName + ":" + cmd[2]);
                                     }
-                                }
+                                }  
                             }
+                             Logger.getLogger(Log.logFileName).log(Level.INFO, (clientName + " " + "sent a message to :" + String.join("", clientNames)));
                         }
                     } else if (cmd[0].equals(ProtocolStrings.LOGOUT)) {
                         // disconnect the client
+                         Logger.getLogger(Log.logFileName).log(Level.INFO, (clientName + " " + "logged out"));
                         break;
                     } else {
                         // invalid command
@@ -96,7 +101,7 @@ public class ClientHandler implements Runnable {
                 printClientList();
                 System.out.println("Closed a connection.");
             } catch (IOException ex) {
-                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                 Logger.getLogger(Log.logFileName).log(Level.INFO, (clientName + " " + "closed the connection"));
             }
         }
     }
@@ -115,6 +120,7 @@ public class ClientHandler implements Runnable {
         }
 
         server.sendMulticast("CLIENTLIST:" + String.join(",", clientList));
+         Logger.getLogger(Log.logFileName).log(Level.INFO, (clientList + " " + "update"));
     }
     
     public boolean isLoggedIn() {

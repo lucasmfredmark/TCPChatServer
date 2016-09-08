@@ -60,9 +60,9 @@ public class EchoClient {
             EchoClient tester = new EchoClient();
             tester.connect(ip, port);
             tester.send("LOGIN:Hello");
-            System.out.println("Received: " + tester.receive());
-            tester.send("MSG::HelloFUcker");
-            System.out.println("Received: " + tester.receive()); //Important Blocking call         
+            System.out.println("Received: " + tester.receive()); //Important Blocking call
+            tester.send("MSG::Hello");
+            System.out.println("Received: " + tester.receive()); //Important Blocking call
             tester.stop();   
         } catch (UnknownHostException ex) {
             Logger.getLogger(EchoClient.class.getName()).log(Level.SEVERE, null, ex);

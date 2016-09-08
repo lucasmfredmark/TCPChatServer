@@ -60,4 +60,8 @@ public class ClientConnection implements AutoCloseable {
         client.stop();
     }
     
+    public EchoClient getClient() {
+        return client;
+    }
+    
 }

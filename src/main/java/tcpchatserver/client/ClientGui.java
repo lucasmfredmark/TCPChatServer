@@ -7,8 +7,8 @@ package tcpchatserver.client;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 /**
  *
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class ClientGui extends javax.swing.JFrame {
 
     private ClientConnection connection;
-    
+
     /**
      * Creates new form ClientGui
      *
@@ -143,12 +143,17 @@ public class ClientGui extends javax.swing.JFrame {
                 connection.addObserver((message) -> {
                     jTextArea2.append(message + "\n");
                 });
-
-                jButton1.addActionListener((ActionEvent e) -> {
-                    String message = jTextField1.getText();
-                    connection.send(message);
-                    jTextField1.setText("");
-                });
+                
+                Action action = new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String message = jTextField1.getText();
+                        connection.send(message);
+                        jTextField1.setText("");
+                    }
+                };
+                
+                jTextField1.addActionListener(action);
                 
                 jButton3.setEnabled(false);
                 jButton4.setEnabled(true);
@@ -157,7 +162,7 @@ public class ClientGui extends javax.swing.JFrame {
                 jTextArea2.append("Could not connect to " + ip + ":" + port + "\n");
             }
         } else {
-            jTextArea2.append("You must specify a valid IP address and a port number." + "\n");
+            jTextArea2.append("You must specify a valid IP address and port number." + "\n");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -167,7 +172,7 @@ public class ClientGui extends javax.swing.JFrame {
             jButton3.setEnabled(true);
             jButton4.setEnabled(false);
         } catch (Exception ex) {
-            Logger.getLogger(ClientGui.class.getName()).log(Level.SEVERE, null, ex);
+            jTextArea2.append("Could not disconnect from the server." + "\n");
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 

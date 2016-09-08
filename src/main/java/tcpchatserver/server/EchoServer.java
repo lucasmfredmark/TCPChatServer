@@ -64,7 +64,7 @@ public class EchoServer {
 //                throw new IllegalArgumentException("Error: Use like: java -jar EchoServer.jar <ip> <port>");
 //            }
             String ip = "localhost";
-            int port = 9007;
+            int port = 7777;
             new EchoServer().runServer(ip, port);
         } catch (Exception e) {
             Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, e);

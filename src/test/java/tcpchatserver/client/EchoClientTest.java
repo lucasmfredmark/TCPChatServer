@@ -24,10 +24,17 @@ import tcpchatserver.server.EchoServer;
  * @author Staal
  */
 public class EchoClientTest {
+
     private Socket socket;
+
     public EchoClientTest() {
     }
-   String[] info = new String[] {"localhost","9002"};
+    String[] info = new String[]{"localhost", "9002"};
+    EchoClient instance = new EchoClient();
+
+    private void conn() throws IOException {
+        instance.connect("localhost", 9002);
+    }
 
     @BeforeClass
     public static void setUpClass() {
@@ -60,10 +67,9 @@ public class EchoClientTest {
         System.out.println("connect");
         String address = "localhost";
         int port = 9002;
-        EchoClient instance = new EchoClient();
+
         instance.connect(address, port);
-        
-      
+
     }
 
     /**
@@ -72,14 +78,13 @@ public class EchoClientTest {
     @Test
     public void testIsClosed() throws IOException {
         System.out.println("isClosed");
-        EchoClient instance = new EchoClient();
-        instance.connect("localhost", 9002);
+
+        conn();
         SocketAddress localsocket = instance.socket.getLocalSocketAddress();
         boolean expResult = localsocket.equals(instance.isClosed());
         boolean result = instance.isClosed();
         assertEquals(expResult, result);
-   
-       
+
     }
 
     /**
@@ -89,12 +94,11 @@ public class EchoClientTest {
     public void testSend() throws IOException {
         System.out.println("send");
         String msg = "";
-        EchoClient instance = new EchoClient();
-        instance.connect("localhost", 9002);
+
+        conn();
         instance.socket.getLocalSocketAddress();
         instance.send(msg);
-        
-        
+
     }
 
     /**
@@ -103,12 +107,11 @@ public class EchoClientTest {
     @Test
     public void testStop() throws Exception {
         System.out.println("stop");
-        EchoClient instance = new EchoClient();
-        instance.connect("localhost", 9002);
+
+        conn();
         instance.socket.getLocalSocketAddress();
         instance.stop();
-       
-       
+
     }
 
     /**
@@ -117,8 +120,8 @@ public class EchoClientTest {
     @Test
     public void testReceive() throws IOException {
         System.out.println("receive");
-        EchoClient instance = new EchoClient();    
-        instance.connect("localhost", 9002);
+
+        conn();
         instance.send("LOGIN:Staal");
         String expResult = instance.receive();
         assertTrue(expResult.equals("CLIENTLIST:Staal"));
@@ -130,10 +133,9 @@ public class EchoClientTest {
     @Test
     public void testMain() {
         System.out.println("main");
-        
+
         EchoClient.main(info);
-       
-        
+
     }
 
 }

@@ -50,7 +50,7 @@ public class EchoClient {
     }
 
     public static void main(String[] args) {
-        int port = 7777;
+        int port = 9002;
         String ip = "localhost";
         if (args.length == 2) {
             ip = args[0];
